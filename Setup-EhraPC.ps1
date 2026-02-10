@@ -1,17 +1,17 @@
 <#
 .SYNOPSIS
     EHRA E-sport - Master Setup Controller (v3.0)
-    Handles: Activation -> Site Selection -> PC Renaming -> Action1 -> Branding -> Reboot
+    Handles: Windows Activation -> Site Selection -> PC Renaming -> Action1 Install -> Branding -> Reboot
 #>
 
-# --- 0. ADMIN CHECK ---
+# ADMIN CHECK
 if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
     Write-Warning "Start dette scriptet som Administrator!"
     Start-Sleep -Seconds 3
     Exit
 }
 
-# --- 1. CONFIGURATION ---
+# CONFIGURATION
 $Sites = @{
     "1" = @{ Code="KVAD"; Name="Kvadrat";        InstallerUrl="https://app.eu.action1.com/agent/c7b8e104-8401-11ee-b219-bd059539eb50/Windows/agent(Ehra_E-sport_Kvadrat).msi" }
     "2" = @{ Code="RAND"; Name="Randaberg";      InstallerUrl="https://app.eu.action1.com/agent/854c5b14-9aa1-11ee-b3d6-d1e2dd4ee5b0/Windows/agent(Ehra_E-sport_Randaberg).msi" }
@@ -24,7 +24,7 @@ Write-Host "==========================================" -ForegroundColor Cyan
 Write-Host "      EHRA E-SPORT - NY PC OPPSETT        " -ForegroundColor Cyan
 Write-Host "==========================================" -ForegroundColor Cyan
 
-# --- 2. WINDOWS ACTIVATION ---
+# WINDOWS ACTIVATION
 function Invoke-WindowsActivation {
     Write-Host "`n[Steg 1] Sjekker Windows Lisens..." -ForegroundColor Yellow
     
@@ -34,28 +34,28 @@ function Invoke-WindowsActivation {
         return
     }
 
-    Write-Host "   -> Ikke aktivert. Sjekker BIOS for nøkkel..."
+    Write-Host "   -> Ikke aktivert. Sjekker BIOS for key..."
     try {
         $biosKey = (Get-CimInstance -ClassName SoftwareLicensingService).OA3xOriginalProductKey
     } catch { $biosKey = $null }
 
     if ([string]::IsNullOrWhiteSpace($biosKey)) {
-        Write-Warning "   -> Ingen BIOS-nøkkel funnet."
-        $biosKey = Read-Host "   -> Skriv inn MAK nøkkel manuelt (XXXXX-XXXXX...)"
+        Write-Warning "   -> Ingen BIOS-key funnet."
+        $biosKey = Read-Host "   -> Skriv inn MAK key manuelt (XXXXX-XXXXX...)"
     } else {
-        Write-Host "   -> Fant BIOS nøkkel: $biosKey" -ForegroundColor Cyan
+        Write-Host "   -> Fant BIOS key: $biosKey" -ForegroundColor Cyan
     }
 
     if (-not [string]::IsNullOrWhiteSpace($biosKey)) {
-        Write-Host "   -> Installerer nøkkel og aktiverer..."
+        Write-Host "   -> Installerer key og aktiverer..."
         cscript /b C:\Windows\System32\slmgr.vbs /ipk $biosKey
         cscript /b C:\Windows\System32\slmgr.vbs /ato
-        Write-Host "   -> Aktivering forsøkt fullført." -ForegroundColor Green
+        Write-Host "   -> Aktivering OK." -ForegroundColor Green
     }
 }
 Invoke-WindowsActivation
 
-# --- 3. SITE SELECTION ---
+# SITE SELECTION
 Write-Host "`n[Steg 2] Velg Avdeling" -ForegroundColor Yellow
 $Sites.GetEnumerator() | Sort-Object Name | ForEach-Object {
     Write-Host "   [$($_.Key)] $($_.Value.Name)"
@@ -70,7 +70,7 @@ if (-not $Sites.ContainsKey($Selection)) {
 $SiteConfig = $Sites[$Selection]
 Write-Host "   -> Valgt: $($SiteConfig.Name) (Kode: $($SiteConfig.Code))" -ForegroundColor Green
 
-# --- 4. PC RENAMING (YOUR LOGIC) ---
+# PC RENAMING
 Write-Host "`n[Steg 3] Konfigurerer PC Navn..." -ForegroundColor Yellow
 
 try {
@@ -85,7 +85,6 @@ if ($BadSerials -contains $SerialNumber) {
     $ShortID = Get-Random -Minimum 100 -Maximum 999
 } else {
     Write-Host "   -> Serienummer: $SerialNumber" -ForegroundColor Gray
-    # Hashing Logic (Beholdt original logikk)
     $Hasher = [System.Security.Cryptography.SHA256]::Create()
     $HashBytes = $Hasher.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($SerialNumber))
     $IntVal = [BitConverter]::ToUInt16($HashBytes, 0)
@@ -106,14 +105,13 @@ try {
     Write-Error "   -> Feil ved navneendring: $_"
 }
 
-# --- 5. ACTION1 INSTALLATION ---
+# ACTION1 INSTALL
 Write-Host "`n[Steg 4] Installerer Action1 ($($SiteConfig.Name))..." -ForegroundColor Yellow
 $InstallerPath = "$env:TEMP\Action1Agent.msi"
 
 try {
     Invoke-WebRequest -Uri $SiteConfig.InstallerUrl -OutFile $InstallerPath -ErrorAction Stop
     
-    # MSI Install Command
     $Process = Start-Process "msiexec.exe" -ArgumentList "/i `"$InstallerPath`" /qn" -Wait -PassThru
     
     if ($Process.ExitCode -eq 0) {
@@ -125,19 +123,18 @@ try {
     Write-Error "   -> Kunne ikke laste ned/installere Action1: $_"
 }
 
-# --- 6. BRANDING SCRIPT ---
-Write-Host "`n[Steg 5] Kjører Branding Script..." -ForegroundColor Yellow
+# BRANDING SCRIPT
+Write-Host "`n[Steg 5] Rebranding..." -ForegroundColor Yellow
 try {
-    # Last ned og kjør direkte fra minnet
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     $BrandingContent = Invoke-RestMethod -Uri $BrandingScriptUrl
     Invoke-Expression $BrandingContent
-    Write-Host "   -> Branding script fullført." -ForegroundColor Green
+    Write-Host "   -> Branding OK." -ForegroundColor Green
 } catch {
     Write-Error "   -> Branding feilet: $_"
 }
 
-# --- 7. REBOOT ---
+# REBOOT
 Write-Host "`n==========================================" -ForegroundColor Cyan
 Write-Host "   OPPSETT FERDIG - RESTARTER OM 10 SEK   " -ForegroundColor Cyan
 Write-Host "==========================================" -ForegroundColor Cyan
