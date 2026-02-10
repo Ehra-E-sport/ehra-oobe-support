@@ -46,6 +46,6 @@ Write-Host "Installerer Action1..."
 Start-Process "msiexec.exe" -ArgumentList "/i $InstallerPath /qn" -Wait
 
 # 6. Clean Up and Reboot
-Write-Host "Installasjonen har fullført. Starter på nytt om 10 sekunder..."
+Write-Host "Installasjon ferdig. Restarter om 10 sekunder..."
 Start-Sleep -Seconds 10
 Restart-Computer -Force

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <unattend xmlns="urn:schemas-microsoft-com:unattend" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
-	<!--https://schneegans.de/windows/unattend-generator/?LanguageMode=Unattended&UILanguage=nb-NO&Locale=nb-NO&Keyboard=00000414&GeoLocation=177&ProcessorArchitecture=amd64&ComputerNameMode=Script&ComputerNameScript=Add-Type+-AssemblyName+%27Microsoft.VisualBasic%27%3B%0D%0Areturn+%5BMicrosoft.VisualBasic.Interaction%5D%3A%3AInputBox%28+%27Gi+maskinen+et+navn+%28eks+EHRAKVAD01%29%3A%27%2C+%27Navn+p%C3%A5+PC%27%2C+%27%27+%29%3B&CompactOsMode=Default&TimeZoneMode=Explicit&TimeZone=Romance+Standard+Time&PartitionMode=Unattended&PartitionLayout=GPT&EspSize=300&RecoveryMode=None&DiskAssertionMode=Skip&WindowsEditionMode=Generic&WindowsEdition=home&InstallFromMode=Automatic&PEMode=Default&UserAccountMode=Unattended&AccountName0=Admin&AccountDisplayName0=Ehra+Admin&AccountPassword0=K1wiBlomst%23&AccountGroup0=Administrators&AccountName1=esport&AccountDisplayName1=E-sport+Ut%C3%B8ver&AccountPassword1=App3lsin%21&AccountGroup1=Users&AutoLogonMode=Own&PasswordExpirationMode=Unlimited&LockoutMode=Default&HideFiles=Hidden&TaskbarSearch=Hide&TaskbarIconsMode=Empty&DisableWidgets=true&DisableBingResults=true&StartTilesMode=Empty&StartPinsMode=Empty&DisableSystemRestore=true&TurnOffSystemSounds=true&HideEdgeFre=true&DeleteWindowsOld=true&EffectsMode=Performance&DesktopIconsMode=Default&StartFoldersMode=Default&WifiMode=Skip&ExpressSettings=DisableAll&LockKeysMode=Skip&StickyKeysMode=Default&ColorMode=Custom&SystemColorTheme=Dark&AppsColorTheme=Dark&AccentColor=%237600d6&EnableTransparency=true&WallpaperMode=Script&WallpaperScript=%23+Photo+by+Sergey+Shmidt+on+Unsplash.+See+https%3A%2F%2Funsplash.com%2Fphotos%2Forange-petaled-flowers-koy6FlCCy5s+for+more+info.%0D%0A%24url+%3D+%27https%3A%2F%2Fehbranding.blob.core.windows.net%2Fbackgrounds%2Fehra_background_01_1920x1080.jpg%27%3B%0D%0A%26+%7B%0D%0A%09%24ProgressPreference+%3D+%27SilentlyContinue%27%3B%0D%0A%09%28+Invoke-WebRequest+-Uri+%24url+-UseBasicParsing+-TimeoutSec+30+%29.Content%3B%0D%0A%7D%3B&LockScreenMode=Default&Remove3DViewer=true&RemoveBingSearch=true&RemoveCalculator=true&RemoveCamera=true&RemoveClipchamp=true&RemoveClock=true&RemoveCopilot=true&RemoveCortana=true&RemoveDevHome=true&RemoveWindowsHello=true&RemoveFamily=true&RemoveFeedbackHub=true&RemoveGetHelp=true&RemoveHandwriting=true&RemoveInternetExplorer=true&RemoveMailCalendar=true&RemoveMaps=true&RemoveMathInputPanel=true&RemoveMediaFeatures=true&RemoveMixedReality=true&RemoveZuneVideo=true&RemoveNews=true&RemoveNotepad=true&RemoveOffice365=true&RemoveOneDrive=true&RemoveOneNote=true&RemoveOneSync=true&RemoveOpenSSHClient=true&RemoveOutlook=true&RemovePaint=true&RemovePaint3D=true&RemovePeople=true&RemovePhotos=true&RemovePowerAutomate=true&RemovePowerShell2=true&RemovePowerShellISE=true&RemoveQuickAssist=true&RemoveRecall=true&RemoveRdpClient=true&RemoveSkype=true&RemoveSnippingTool=true&RemoveSolitaire=true&RemoveSpeech=true&RemoveStepsRecorder=true&RemoveStickyNotes=true&RemoveTeams=true&RemoveGetStarted=true&RemoveToDo=true&RemoveVoiceRecorder=true&RemoveWallet=true&RemoveWeather=true&RemoveFaxAndScan=true&RemoveWindowsMediaPlayer=true&RemoveZuneMusic=true&RemoveWindowsTerminal=true&RemoveWordPad=true&RemoveYourPhone=true&SystemScript0=%24out+%3D+%26+%22%24env%3Awindir%5CSystem32%5Cpowercfg.exe%22+%2FDuplicateScheme+%27e9a42b02-d5df-448d-aa00-03f14749eb61%27%3B%0D%0Aif%28+%24out+-match+%27%5Cs%28%5Ba-f0-9-%5D%7B36%7D%29%5Cs%27+%29+%7B%0D%0A++++%26+%22%24env%3Awindir%5CSystem32%5Cpowercfg.exe%22+%2FSetActive+%24Matches%5B1%5D%3B%0D%0A%7D+else+%7B%0D%0A++++%27Could+not+enable+Ultimate+Performance+power+scheme.%27+%7C+Write-Warning%3B%0D%0A%7D&SystemScriptType0=Ps1&SystemScript1=Windows+Registry+Editor+Version+5.00%0D%0A%0D%0A%5BHKEY_LOCAL_MACHINE%5CSoftware%5CMicrosoft%5CWindows+NT%5CCurrentVersion%5D%0D%0A%22RegisteredOrganization%22%3D%22Ehra+E-sport%22%0D%0A%22RegisteredOwner%22%3D%22Ehra+E-sport%22&SystemScriptType1=Reg&FirstLogonScript0=powershell.exe+-NoProfile+-ExecutionPolicy+Bypass+-Command+%22Invoke-RestMethod+-Uri+%27https%3A%2F%2Fraw.githubusercontent.com%2FEhra-E-sport%2Fehra-oobe-support%2Frefs%2Fheads%2Fmain%2Fsetup-avdelingsvelger.ps1%27+%7C+Invoke-Expression%22%3C%2FCommandLine%3E&FirstLogonScriptType0=Cmd&WdacMode=Skip&AppLockerMode=Skip-->
+	<!--https://schneegans.de/windows/unattend-generator/?LanguageMode=Unattended&UILanguage=nb-NO&Locale=nb-NO&Keyboard=00000414&GeoLocation=177&ProcessorArchitecture=amd64&ComputerNameMode=Script&ComputerNameScript=Add-Type+-AssemblyName+%27Microsoft.VisualBasic%27%3B%0D%0Areturn+%5BMicrosoft.VisualBasic.Interaction%5D%3A%3AInputBox%28+%27Gi+maskinen+et+navn+%28eks+EHRAKVAD01%29%3A%27%2C+%27Navn+p%C3%A5+PC%27%2C+%27%27+%29%3B&CompactOsMode=Default&TimeZoneMode=Explicit&TimeZone=Romance+Standard+Time&PartitionMode=Unattended&PartitionLayout=GPT&EspSize=300&RecoveryMode=None&DiskAssertionMode=Skip&WindowsEditionMode=Generic&WindowsEdition=home&InstallFromMode=Automatic&PEMode=Default&UserAccountMode=Unattended&AccountName0=Admin&AccountDisplayName0=Ehra+Admin&AccountPassword0=K1wiBlomst%23&AccountGroup0=Administrators&AccountName1=esport&AccountDisplayName1=E-sport+Ut%C3%B8ver&AccountPassword1=App3lsin%21&AccountGroup1=Users&AutoLogonMode=Own&PasswordExpirationMode=Unlimited&LockoutMode=Default&HideFiles=Hidden&TaskbarSearch=Hide&TaskbarIconsMode=Empty&DisableWidgets=true&DisableBingResults=true&StartTilesMode=Empty&StartPinsMode=Empty&DisableSystemRestore=true&TurnOffSystemSounds=true&HideEdgeFre=true&DeleteWindowsOld=true&EffectsMode=Performance&DesktopIconsMode=Default&StartFoldersMode=Default&WifiMode=Skip&ExpressSettings=DisableAll&LockKeysMode=Skip&StickyKeysMode=Default&ColorMode=Custom&SystemColorTheme=Dark&AppsColorTheme=Dark&AccentColor=%237600d6&EnableTransparency=true&WallpaperMode=Script&WallpaperScript=%23+Photo+by+Sergey+Shmidt+on+Unsplash.+See+https%3A%2F%2Funsplash.com%2Fphotos%2Forange-petaled-flowers-koy6FlCCy5s+for+more+info.%0D%0A%24url+%3D+%27https%3A%2F%2Fehbranding.blob.core.windows.net%2Fbackgrounds%2Fehra_background_01_1920x1080.jpg%27%3B%0D%0A%26+%7B%0D%0A%09%24ProgressPreference+%3D+%27SilentlyContinue%27%3B%0D%0A%09%28+Invoke-WebRequest+-Uri+%24url+-UseBasicParsing+-TimeoutSec+30+%29.Content%3B%0D%0A%7D%3B&LockScreenMode=Default&Remove3DViewer=true&RemoveBingSearch=true&RemoveCamera=true&RemoveClipchamp=true&RemoveClock=true&RemoveCopilot=true&RemoveCortana=true&RemoveDevHome=true&RemoveWindowsHello=true&RemoveFamily=true&RemoveFeedbackHub=true&RemoveGetHelp=true&RemoveHandwriting=true&RemoveInternetExplorer=true&RemoveMailCalendar=true&RemoveMaps=true&RemoveMathInputPanel=true&RemoveMediaFeatures=true&RemoveMixedReality=true&RemoveZuneVideo=true&RemoveNews=true&RemoveOffice365=true&RemoveOneDrive=true&RemoveOneNote=true&RemoveOneSync=true&RemoveOpenSSHClient=true&RemoveOutlook=true&RemovePaint3D=true&RemovePeople=true&RemovePhotos=true&RemovePowerAutomate=true&RemovePowerShell2=true&RemovePowerShellISE=true&RemoveQuickAssist=true&RemoveRecall=true&RemoveRdpClient=true&RemoveSkype=true&RemoveSolitaire=true&RemoveSpeech=true&RemoveStepsRecorder=true&RemoveStickyNotes=true&RemoveTeams=true&RemoveGetStarted=true&RemoveToDo=true&RemoveVoiceRecorder=true&RemoveWallet=true&RemoveWeather=true&RemoveFaxAndScan=true&RemoveWindowsMediaPlayer=true&RemoveZuneMusic=true&RemoveWindowsTerminal=true&RemoveYourPhone=true&SystemScript0=%24out+%3D+%26+%22%24env%3Awindir%5CSystem32%5Cpowercfg.exe%22+%2FDuplicateScheme+%27e9a42b02-d5df-448d-aa00-03f14749eb61%27%3B%0D%0Aif%28+%24out+-match+%27%5Cs%28%5Ba-f0-9-%5D%7B36%7D%29%5Cs%27+%29+%7B%0D%0A++++%26+%22%24env%3Awindir%5CSystem32%5Cpowercfg.exe%22+%2FSetActive+%24Matches%5B1%5D%3B%0D%0A%7D+else+%7B%0D%0A++++%27Could+not+enable+Ultimate+Performance+power+scheme.%27+%7C+Write-Warning%3B%0D%0A%7D&SystemScriptType0=Ps1&SystemScript1=Windows+Registry+Editor+Version+5.00%0D%0A%0D%0A%5BHKEY_LOCAL_MACHINE%5CSoftware%5CMicrosoft%5CWindows+NT%5CCurrentVersion%5D%0D%0A%22RegisteredOrganization%22%3D%22Ehra+E-sport%22%0D%0A%22RegisteredOwner%22%3D%22Ehra+E-sport%22&SystemScriptType1=Reg&FirstLogonScript0=IEX+%28New-Object+System.Net.WebClient%29.DownloadString%28%27https%3A%2F%2Fraw.githubusercontent.com%2FEhra-E-sport%2Fehra-oobe-support%2Frefs%2Fheads%2Fmain%2Fsetup-avdelingsvelger.ps1%27%29&FirstLogonScriptType0=Ps1&WdacMode=Skip&AppLockerMode=Skip-->
 	<settings pass="offlineServicing"></settings>
 	<settings pass="windowsPE">
 		<component name="Microsoft-Windows-International-Core-WinPE" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
@@ -183,7 +183,6 @@ Set-StrictMode -Version 'Latest';
 $selectors = @(
 	'Microsoft.Microsoft3DViewer';
 	'Microsoft.BingSearch';
-	'Microsoft.WindowsCalculator';
 	'Microsoft.WindowsCamera';
 	'Clipchamp.Clipchamp';
 	'Microsoft.WindowsAlarms';
@@ -198,18 +197,15 @@ $selectors = @(
 	'Microsoft.WindowsMaps';
 	'Microsoft.MixedReality.Portal';
 	'Microsoft.BingNews';
-	'Microsoft.WindowsNotepad';
 	'Microsoft.MicrosoftOfficeHub';
 	'Microsoft.Office.OneNote';
 	'Microsoft.OutlookForWindows';
-	'Microsoft.Paint';
 	'Microsoft.MSPaint';
 	'Microsoft.People';
 	'Microsoft.Windows.Photos';
 	'Microsoft.PowerAutomateDesktop';
 	'MicrosoftCorporationII.QuickAssist';
 	'Microsoft.SkypeApp';
-	'Microsoft.ScreenSketch';
 	'Microsoft.MicrosoftSolitaireCollection';
 	'Microsoft.MicrosoftStickyNotes';
 	'MicrosoftTeams';
@@ -271,10 +267,8 @@ $selectors = @(
 	'MathRecognizer';
 	'OneCoreUAP.OneSync';
 	'OpenSSH.Client';
-	'Microsoft.Windows.MSPaint';
 	'Microsoft.Windows.PowerShell.ISE';
 	'App.Support.QuickAssist';
-	'Microsoft.Windows.SnippingTool';
 	'Language.Speech';
 	'Language.TextToSpeech';
 	'App.StepsRecorder';
@@ -282,7 +276,6 @@ $selectors = @(
 	'Hello.Face.Migration.18967';
 	'Hello.Face.20134';
 	'Media.WindowsMediaPlayer';
-	'Microsoft.Windows.WordPad';
 );
 $getCommand = {
   Get-WindowsCapability -Online | Where-Object -Property 'State' -NotIn -Value @(
@@ -333,7 +326,6 @@ $selectors = @(
 	'MicrosoftWindowsPowerShellV2Root';
 	'Microsoft-RemoteDesktopConnection';
 	'Recall';
-	'Microsoft-SnippingTool';
 );
 $getCommand = {
   Get-WindowsOptionalFeature -Online | Where-Object -Property 'State' -NotIn -Value @(
@@ -611,8 +603,8 @@ Windows Registry Editor Version 5.00
 "RegisteredOrganization"="Ehra E-sport"
 "RegisteredOwner"="Ehra E-sport"
 		</File>
-		<File path="C:\Windows\Setup\Scripts\unattend-03.cmd">
-powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/Ehra-E-sport/ehra-oobe-support/refs/heads/main/setup-avdelingsvelger.ps1' | Invoke-Expression"&lt;/CommandLine&gt;
+		<File path="C:\Windows\Setup\Scripts\unattend-03.ps1">
+IEX (New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/Ehra-E-sport/ehra-oobe-support/refs/heads/main/setup-avdelingsvelger.ps1')
 		</File>
 		<File path="C:\Windows\Setup\Scripts\Specialize.ps1">
 $scripts = @(
@@ -627,12 +619,6 @@ $scripts = @(
 	};
 	{
 		Remove-Item -LiteralPath 'Registry::HKLM\Software\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\DevHomeUpdate' -Force -ErrorAction 'SilentlyContinue';
-	};
-	{
-		reg.exe add "HKCR\.txt\ShellNew" /v ItemName /t REG_EXPAND_SZ /d "@C:\Windows\system32\notepad.exe,-470" /f;
-		reg.exe add "HKCR\.txt\ShellNew" /v NullFile /t REG_SZ /f;
-		reg.exe add "HKCR\txtfilelegacy" /v FriendlyTypeName /t REG_EXPAND_SZ /d "@C:\Windows\system32\notepad.exe,-469" /f;
-		reg.exe add "HKCR\txtfilelegacy" /ve /t REG_SZ /d "Text Document" /f;
 	};
 	{
 		Remove-Item -LiteralPath 'C:\Users\Default\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk', 'C:\Windows\System32\OneDriveSetup.exe', 'C:\Windows\SysWOW64\OneDriveSetup.exe' -ErrorAction 'Continue';
@@ -793,9 +779,6 @@ $scripts = @(
 		reg.exe add "HKU\DefaultUser\Software\Microsoft\Internet Explorer\LowRegistry\Audio\PolicyConfig\PropertyStore" /f;
 	};
 	{
-		reg.exe add "HKU\DefaultUser\Software\Microsoft\Notepad" /v ShowStoreBanner /t REG_DWORD /d 0 /f;
-	};
-	{
 		Remove-ItemProperty -LiteralPath 'Registry::HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\Run' -Name 'OneDriveSetup' -Force -ErrorAction 'Continue';
 	};
 	{
@@ -850,7 +833,7 @@ $scripts = @(
 		cmd.exe /c "rmdir C:\Windows.old";
 	};
 	{
-		C:\Windows\Setup\Scripts\unattend-03.cmd;
+		&amp; 'C:\Windows\Setup\Scripts\unattend-03.ps1';
 	};
 	{
 		Remove-Item -LiteralPath @(
