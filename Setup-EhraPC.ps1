@@ -1,134 +1,145 @@
 <#
 .SYNOPSIS
-    Master Setup Controller for Ehra E-sport PCs.
-    Handles: Windows Activation, Department Selection (Action1), and Branding.
-
-.NOTES
-    Run as Administrator.
+    EHRA E-sport - Master Setup Controller (v3.0)
+    Handles: Activation -> Site Selection -> PC Renaming -> Action1 -> Branding -> Reboot
 #>
 
-# 0. ENSURE ADMIN RIGHTS
+# --- 0. ADMIN CHECK ---
 if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
-    Write-Warning "This script requires Administrator privileges!"
-    Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
-    exit
+    Write-Warning "Start dette scriptet som Administrator!"
+    Start-Sleep -Seconds 3
+    Exit
 }
 
+# --- 1. CONFIGURATION ---
+$Sites = @{
+    "1" = @{ Code="KVAD"; Name="Kvadrat";        InstallerUrl="https://app.eu.action1.com/agent/c7b8e104-8401-11ee-b219-bd059539eb50/Windows/agent(Ehra_E-sport_Kvadrat).msi" }
+    "2" = @{ Code="RAND"; Name="Randaberg";      InstallerUrl="https://app.eu.action1.com/agent/854c5b14-9aa1-11ee-b3d6-d1e2dd4ee5b0/Windows/agent(Ehra_E-sport_Randaberg).msi" }
+    "3" = @{ Code="TEST"; Name="Test Avdeling";  InstallerUrl="https://app.eu.action1.com/agent/6cf71114-05fa-11f1-9ae8-b506d187dae7/Windows/agent(Ehra_E-sport_Test_Avdeling).msi" }
+}
+$BrandingScriptUrl = "https://raw.githubusercontent.com/Ehra-E-sport/ehra-oobe-support/refs/heads/main/Setup-EhraPCBranding.ps1"
+
 Clear-Host
-Write-Host "=============================================" -ForegroundColor Cyan
-Write-Host "          EHRA E-SPORT PC OPPSETT            " -ForegroundColor Cyan
-Write-Host "=============================================" -ForegroundColor Cyan
+Write-Host "==========================================" -ForegroundColor Cyan
+Write-Host "      EHRA E-SPORT - NY PC OPPSETT        " -ForegroundColor Cyan
+Write-Host "==========================================" -ForegroundColor Cyan
 
-# --- STEP 1: WINDOWS ACTIVATION MODULE ---
+# --- 2. WINDOWS ACTIVATION ---
 function Invoke-WindowsActivation {
-    Write-Host "`n[Step 1] Checking Windows Activation..." -ForegroundColor Yellow
-
-    # Check current status
+    Write-Host "`n[Steg 1] Sjekker Windows Lisens..." -ForegroundColor Yellow
+    
     $licensing = Get-CimInstance SoftwareLicensingProduct -Filter "Name like 'Windows%' and PartialProductKey is not null"
     if ($licensing.LicenseStatus -eq 1) {
-        Write-Host "   -> Windows is already activated!" -ForegroundColor Green
+        Write-Host "   -> Windows er allerede aktivert." -ForegroundColor Green
         return
     }
 
-    Write-Host "   -> Not activated. Attempting BIOS Key retrieval..." -ForegroundColor DarkYellow
-    
-    # Try to get BIOS Key (OA3x)
+    Write-Host "   -> Ikke aktivert. Sjekker BIOS for nøkkel..."
     try {
         $biosKey = (Get-CimInstance -ClassName SoftwareLicensingService).OA3xOriginalProductKey
-    } catch {
-        $biosKey = $null
-    }
+    } catch { $biosKey = $null }
 
     if ([string]::IsNullOrWhiteSpace($biosKey)) {
-        Write-Warning "   -> No BIOS Key found."
-        
-        # PROMPT FOR MAK KEY
-        Write-Host "   -> Please enter a valid MAK Key manually:" -ForegroundColor Yellow
-        $biosKey = Read-Host "      Key (XXXXX-XXXXX-XXXXX-XXXXX-XXXXX)"
+        Write-Warning "   -> Ingen BIOS-nøkkel funnet."
+        $biosKey = Read-Host "   -> Skriv inn MAK nøkkel manuelt (XXXXX-XXXXX...)"
     } else {
-        Write-Host "   -> Found BIOS Key: $biosKey" -ForegroundColor Cyan
+        Write-Host "   -> Fant BIOS nøkkel: $biosKey" -ForegroundColor Cyan
     }
 
     if (-not [string]::IsNullOrWhiteSpace($biosKey)) {
-        Write-Host "   -> Installing Key..."
+        Write-Host "   -> Installerer nøkkel og aktiverer..."
         cscript /b C:\Windows\System32\slmgr.vbs /ipk $biosKey
-        
-        Write-Host "   -> Activating Online..."
         cscript /b C:\Windows\System32\slmgr.vbs /ato
-        
-        # Verify
-        $licensing = Get-CimInstance SoftwareLicensingProduct -Filter "Name like 'Windows%' and PartialProductKey is not null"
-        if ($licensing.LicenseStatus -eq 1) {
-            Write-Host "   -> Success: Windows is now ACTIVATED." -ForegroundColor Green
-        } else {
-            Write-Error "   -> Activation failed. Please check the key or internet connection."
-        }
-    } else {
-        Write-Error "   -> No key provided. Skipping activation."
+        Write-Host "   -> Aktivering forsøkt fullført." -ForegroundColor Green
     }
 }
-
-# --- STEP 2: DEPARTMENT SELECTION (ACTION1) ---
-function Invoke-DepartmentSetup {
-    Write-Host "`n[Step 2] Department Configuration" -ForegroundColor Yellow
-    
-    # Define your Action1 Download Links or IDs here
-    $departments = @{
-        "1" = @{ Code="KVAD"; Name="Kvadrat";      InstallerUrl="https://app.eu.action1.com/agent/c7b8e104-8401-11ee-b219-bd059539eb50/Windows/agent(Ehra_E-sport_Kvadrat).msi" }
-        "2" = @{ Code="RAND"; Name="Randaberg";      InstallerUrl="https://app.eu.action1.com/agent/854c5b14-9aa1-11ee-b3d6-d1e2dd4ee5b0/Windows/agent(Ehra_E-sport_Randaberg).msi" }
-        "3" = @{ Code="TEST"; Name="Test Avdeling";  InstallerUrl="https://app.eu.action1.com/agent/6cf71114-05fa-11f1-9ae8-b506d187dae7/Windows/agent(Ehra_E-sport_Test_Avdeling).msi" }
-    }
-
-    Write-Host "Select the Department (Avdeling) for this PC:"
-    $departments.GetEnumerator() | Sort-Object Name | ForEach-Object {
-        Write-Host "   [$($_.Key)] $($_.Value.Name)"
-    }
-
-    $selection = Read-Host "`nEnter number"
-
-    if ($departments.ContainsKey($selection)) {
-        $dept = $departments[$selection]
-        Write-Host "   -> Selected: $($dept.Name)" -ForegroundColor Cyan
-        Write-Host "   -> Installing Action1 Agent for $($dept.Name)..."
-        
-        # Example of downloading and running the Action1 installer silently
-        # Note: You need to replace the logic below with your specific Action1 install command
-        
-        # $installerPath = "$env:TEMP\Action1Setup.exe"
-        # Invoke-WebRequest -Uri $dept.Action1_Cmd -OutFile $installerPath
-        # Start-Process -FilePath $installerPath -ArgumentList "/quiet" -Wait
-        
-        Write-Host "   -> (Placeholder) Action1 installed for $($dept.Name)." -ForegroundColor Green
-    } else {
-        Write-Warning "   -> Invalid selection. Skipping Department setup."
-    }
-}
-
-# --- STEP 3: BRANDING SCRIPT ---
-function Invoke-Branding {
-    Write-Host "`n[Step 3] Applying Branding (Wallpaper, Themes, Support Info)..." -ForegroundColor Yellow
-    
-    $brandingUrl = "https://raw.githubusercontent.com/Ehra-E-sport/ehra-oobe-support/refs/heads/main/Setup-EhraPCBranding.ps1"
-    
-    try {
-        # Securely download and run the script from memory without saving to disk
-        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-        $scriptContent = Invoke-RestMethod -Uri $brandingUrl
-        Invoke-Expression $scriptContent
-        Write-Host "   -> Branding script executed successfully." -ForegroundColor Green
-    } catch {
-        Write-Error "   -> Failed to run Branding script. Check internet connection."
-        Write-Error "   -> Error: $_"
-    }
-}
-
-# --- MAIN EXECUTION FLOW ---
-
 Invoke-WindowsActivation
-Invoke-DepartmentSetup
-Invoke-Branding
 
-Write-Host "`n=============================================" -ForegroundColor Cyan
-Write-Host "         OPPSETT FERDIG - RESTARTER..        " -ForegroundColor Cyan
-Write-Host "=============================================" -ForegroundColor Cyan
-Pause
+# --- 3. SITE SELECTION ---
+Write-Host "`n[Steg 2] Velg Avdeling" -ForegroundColor Yellow
+$Sites.GetEnumerator() | Sort-Object Name | ForEach-Object {
+    Write-Host "   [$($_.Key)] $($_.Value.Name)"
+}
+
+$Selection = Read-Host "`nVelg ID"
+if (-not $Sites.ContainsKey($Selection)) {
+    Write-Error "Ugyldig valg. Avslutter..."
+    Start-Sleep -Seconds 3
+    Exit
+}
+$SiteConfig = $Sites[$Selection]
+Write-Host "   -> Valgt: $($SiteConfig.Name) (Kode: $($SiteConfig.Code))" -ForegroundColor Green
+
+# --- 4. PC RENAMING (YOUR LOGIC) ---
+Write-Host "`n[Steg 3] Konfigurerer PC Navn..." -ForegroundColor Yellow
+
+try {
+    $SerialNumber = (Get-CimInstance Win32_Bios -ErrorAction Stop).SerialNumber
+} catch { $SerialNumber = "UNKNOWN" }
+
+# Sjekk mot ugyldige serienummer
+$BadSerials = @("System Serial Number", "To be filled by O.E.M.", "Default String", "0", "UNKNOWN", "")
+
+if ($BadSerials -contains $SerialNumber) {
+    Write-Warning "   -> Ugyldig serienummer ('$SerialNumber'). Genererer tilfeldig ID."
+    $ShortID = Get-Random -Minimum 100 -Maximum 999
+} else {
+    Write-Host "   -> Serienummer: $SerialNumber" -ForegroundColor Gray
+    # Hashing Logic (Beholdt original logikk)
+    $Hasher = [System.Security.Cryptography.SHA256]::Create()
+    $HashBytes = $Hasher.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($SerialNumber))
+    $IntVal = [BitConverter]::ToUInt16($HashBytes, 0)
+    $ShortID = "{0:D3}" -f ($IntVal % 1000)
+}
+
+$NewPCName = "EHRA$($SiteConfig.Code)$ShortID"
+Write-Host "   -> Nytt PC Navn: $NewPCName" -ForegroundColor Cyan
+
+try {
+    if ($env:COMPUTERNAME -ne $NewPCName) {
+        Rename-Computer -NewName $NewPCName -Force -ErrorAction Stop
+        Write-Host "   -> Navneendring satt til neste omstart." -ForegroundColor Green
+    } else {
+        Write-Host "   -> PC-navnet er allerede korrekt." -ForegroundColor Gray
+    }
+} catch {
+    Write-Error "   -> Feil ved navneendring: $_"
+}
+
+# --- 5. ACTION1 INSTALLATION ---
+Write-Host "`n[Steg 4] Installerer Action1 ($($SiteConfig.Name))..." -ForegroundColor Yellow
+$InstallerPath = "$env:TEMP\Action1Agent.msi"
+
+try {
+    Invoke-WebRequest -Uri $SiteConfig.InstallerUrl -OutFile $InstallerPath -ErrorAction Stop
+    
+    # MSI Install Command
+    $Process = Start-Process "msiexec.exe" -ArgumentList "/i `"$InstallerPath`" /qn" -Wait -PassThru
+    
+    if ($Process.ExitCode -eq 0) {
+        Write-Host "   -> Action1 installert!" -ForegroundColor Green
+    } else {
+        Write-Error "   -> Installasjon feilet. Kode: $($Process.ExitCode)"
+    }
+} catch {
+    Write-Error "   -> Kunne ikke laste ned/installere Action1: $_"
+}
+
+# --- 6. BRANDING SCRIPT ---
+Write-Host "`n[Steg 5] Kjører Branding Script..." -ForegroundColor Yellow
+try {
+    # Last ned og kjør direkte fra minnet
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    $BrandingContent = Invoke-RestMethod -Uri $BrandingScriptUrl
+    Invoke-Expression $BrandingContent
+    Write-Host "   -> Branding script fullført." -ForegroundColor Green
+} catch {
+    Write-Error "   -> Branding feilet: $_"
+}
+
+# --- 7. REBOOT ---
+Write-Host "`n==========================================" -ForegroundColor Cyan
+Write-Host "   OPPSETT FERDIG - RESTARTER OM 10 SEK   " -ForegroundColor Cyan
+Write-Host "==========================================" -ForegroundColor Cyan
+Start-Sleep -Seconds 10
+Restart-Computer -Force

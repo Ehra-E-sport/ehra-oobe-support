@@ -11,9 +11,9 @@ $contentPath  = "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDelivery
 try {
     Invoke-WebRequest -Uri $imageUrl -OutFile $savePath -ErrorAction Stop
     $absolutePath = (Get-Item $savePath).FullName
-    Write-Host "Image saved successfully to $absolutePath" -ForegroundColor Green
+    Write-Host "Bilde lagret til $absolutePath" -ForegroundColor Green
 } catch {
-    Write-Error "Failed to download image: $($_.Exception.Message)"
+    Write-Error "Feil ved lagring av bilde: $($_.Exception.Message)"
     exit
 }
 
@@ -31,4 +31,4 @@ if (-not (Test-Path $registryPol)) { New-Item -Path $registryPol -Force | Out-Nu
 Set-ItemProperty -Path $registryPol -Name "LockScreenImage"      -Value $absolutePath -Type String
 Set-ItemProperty -Path $registryPol -Name "NoChangingLockScreen" -Value 1             -Type DWord
 
-Write-Host "Lock screen configuration complete. A restart or logoff may be required." -ForegroundColor Cyan
+Write-Host "Bilde for lock screen satt. Restart.." -ForegroundColor Cyan
