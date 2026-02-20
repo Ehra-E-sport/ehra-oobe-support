@@ -16,7 +16,7 @@ No input should be needed before ready in Windows.
 Auto install Windows 11 with drivers
 Create local administrator user "admin" & local standard user "esport"
 Disable or turn off ads and AI features
-
+Disable recomendations in Edge
 
 
 

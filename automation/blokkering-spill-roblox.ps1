@@ -92,7 +92,6 @@ if ((Get-Item $hostsPath).IsReadOnly) {
 foreach ($url in $blockedList) {
     $entry = "127.0.0.1 $url"
     
-    # Notice the extra parentheses around ([regex]::Escape($url))
     if (!(Select-String -Path $hostsPath -Pattern ([regex]::Escape($url)) -Quiet)) {
         Add-Content -Path $hostsPath -Value "`n$entry"
         Write-Host "Blokkert: $url"
