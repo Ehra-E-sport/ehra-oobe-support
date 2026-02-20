@@ -1,4 +1,5 @@
-# 1. Define the Cleanup Script
+# 1. Powershell script som skal kjøres ved oppstart for å tømme alle brukerens mapper og Recycle Bin, samt rydde opp i Edge data. Dette er en "Deep Clean" for å sikre at ingen personlige data eller filer blir liggende igjen etter bruk.
+# 2. Skriptet lagres i ProgramData og kjøres via en Scheduled Task som kjører ved oppstart under SYSTEM-kontoen for å sikre at det har nødvendige rettigheter og kjøres uansett hvilken bruker som logger inn.
 $scriptContent = @'
 # Stop any pre-launched Edge processes
 Stop-Process -Name "msedge", "SearchHost" -Force -ErrorAction SilentlyContinue
@@ -43,11 +44,11 @@ foreach ($Profile in $UserProfiles) {
 Clear-RecycleBin -Force -ErrorAction SilentlyContinue
 '@
 
-# 2. Save the script to the Windows directory
+# 2. Lagre script i programdata
 $scriptPath = "C:\ProgramData\EhraMagic\os-cleanupscript.ps1"
 $scriptContent | Out-File -FilePath $scriptPath -Force -Encoding UTF8
 
-# 3. Create/Update the Scheduled Task (Trigger: At Startup)
+# 3. Scheduled Task (Trigger: At Startup)
 $Action = New-ScheduledTaskAction -Execute 'PowerShell.exe' -Argument "-ExecutionPolicy Bypass -File $scriptPath"
 $Trigger = New-ScheduledTaskTrigger -AtStartup
 $Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -ExecutionTimeLimit (New-TimeSpan -Minutes 10)
@@ -59,4 +60,4 @@ Register-ScheduledTask -TaskName "EHRA_MAGIC_WIPE" `
                        -RunLevel Highest `
                        -Force
 
-Write-Host "EHRA Deep Cleanup Task Registered. Recycle bin and all user folders will be emptied on reboot."
+Write-Host "Ehra Deep Cleanup Task Registered. Recycle bin and all user folders will be emptied on reboot."
