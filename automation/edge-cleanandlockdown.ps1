@@ -1,34 +1,39 @@
-$registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Edge"
-if (!(Test-Path $registryPath)) { New-Item -Path $registryPath -Force }
+# 1. Kill all running Edge processes so settings can apply
+Stop-Process -Name "msedge" -ErrorAction SilentlyContinue
 
-# --- 1. FORCE HOMEPAGE EVERYWHERE ---
-# This forces the "Home" button and the startup behavior to your URL
-Set-ItemProperty -Path $registryPath -Name "RestoreOnStartup" -Value 4
-Set-ItemProperty -Path $registryPath -Name "HomepageLocation" -Value "https://ehraesport.no"
-Set-ItemProperty -Path $registryPath -Name "HomepageIsNewTabPage" -Value 0
-$urlPath = "$registryPath\RestoreOnStartupURLs"
-if (!(Test-Path $urlPath)) { New-Item -Path $urlPath -Force }
-Set-ItemProperty -Path $urlPath -Name "1" -Value "https://ehraesport.no"
+# 2. Hard-Set Registry Policies (Targeting the 'Mandatory' hive)
+$regPath = "HKLM:\SOFTWARE\Policies\Microsoft\Edge"
+if (!(Test-Path $regPath)) { New-Item -Path $regPath -Force }
 
-# --- 2. KILL HISTORY & BACKGROUND PROCESSES ---
-# Startup Boost keeps Edge "alive" in the background, preventing history wipe.
-Set-ItemProperty -Path $registryPath -Name "StartupBoostEnabled" -Value 0
-Set-ItemProperty -Path $registryPath -Name "ClearBrowsingDataOnExit" -Value 1
-Set-ItemProperty -Path $registryPath -Name "InPrivateModeAvailability" -Value 2
+$settings = @{
+    "InPrivateModeAvailability" = 2
+    "HideFirstRunExperience" = 1
+    "RestoreOnStartup" = 4
+    "StartupBoostEnabled" = 0
+    "HubsSidebarEnabled" = 0
+    "EdgeShoppingAssistantEnabled" = 0
+    "PasswordManagerEnabled" = 0
+    "ClearBrowsingDataOnExit" = 1
+}
 
-# --- 3. KILL COPILOT & AI COMPLETELY ---
-# These are the 25h2 specific keys to remove the Sidebar and Copilot icon
-Set-ItemProperty -Path $registryPath -Name "HubsSidebarEnabled" -Value 0
-Set-ItemProperty -Path $registryPath -Name "EdgeAssistantEnabled" -Value 0
-Set-ItemProperty -Path $registryPath -Name "ComposeAllowed" -Value 0
-Set-ItemProperty -Path $registryPath -Name "VisualSearchEnabled" -Value 0
-# This specifically targets the "Discover" (Copilot) button
-Set-ItemProperty -Path $registryPath -Name "ShowHubsSidebar" -Value 0
+$settings.GetEnumerator() | ForEach-Object {
+    Set-ItemProperty -Path $regPath -Name $_.Key -Value $_.Value
+}
 
-# --- 4. CLEANUP UI ---
-Set-ItemProperty -Path $registryPath -Name "HideFirstRunExperience" -Value 1
-Set-ItemProperty -Path $registryPath -Name "InPrivateBrowsingNotificationsEnabled" -Value 0
-Set-ItemProperty -Path $registryPath -Name "PasswordManagerEnabled" -Value 0
-Set-ItemProperty -Path $registryPath -Name "EdgeShoppingAssistantEnabled" -Value 0
+# 3. Rewrite Shortcuts (Desktop & Taskbar)
+# This forces Edge to launch with specific 'Arguments'
+$edgePath = "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+$arguments = "--inprivate --no-first-run --disable-features=msEdgeSidebar,msEdgeCompose https://ehraesport.no"
 
-Write-Host "Aggressive Edge Lockdown Applied. Restart Edge to see changes."
+$WshShell = New-Object -ComObject WScript.Shell
+$shortcuts = Get-ChildItem -Path "$env:PUBLIC\Desktop", "$env:USERPROFILE\Desktop" -Filter "*.lnk"
+
+foreach ($lnk in $shortcuts) {
+    $shortcut = $WshShell.CreateShortcut($lnk.FullName)
+    if ($shortcut.TargetPath -like "*msedge.exe*") {
+        $shortcut.Arguments = $arguments
+        $shortcut.Save()
+    }
+}
+
+Write-Host "Edge has been lobotomized and shortcuts updated for EHRA Esport."
