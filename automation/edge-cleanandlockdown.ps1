@@ -1,42 +1,44 @@
-# 1. Force kill all Edge processes to ensure settings apply
+# 1. Kill Edge and all its background helpers
 Stop-Process -Name "msedge" -ErrorAction SilentlyContinue
+Start-Sleep -Seconds 2 # Give it a moment to release file locks
 
-# 2. Set Mandatory Registry Policies
+# 2. THE NUCLEAR OPTION: Wipe the User Data / History Cache
+# This deletes the 'Default' profile folder where history/cookies live.
+$edgeUserDataPath = "$env:LOCALAPPDATA\Microsoft\Edge\User Data\Default"
+if (Test-Path $edgeUserDataPath) {
+    Remove-Item -Path $edgeUserDataPath -Recurse -Force -ErrorAction SilentlyContinue
+}
+
+# 3. Hard-Set Registry Policies (Targeting HKLM to override users)
 $regPath = "HKLM:\SOFTWARE\Policies\Microsoft\Edge"
 if (!(Test-Path $regPath)) { New-Item -Path $regPath -Force }
 
 $settings = @{
-    "InPrivateModeAvailability"     = 2     # Forces InPrivate
-    "HideFirstRunExperience"        = 1     # No "Welcome to Edge"
-    "RestoreOnStartup"              = 4     # Open specific URLs
-    "StartupBoostEnabled"           = 0     # Necessary for history wipe on close
-    "ContinueRunningInBackground"   = 0     # Forces Edge to actually die when closed
-    "ClearBrowsingDataOnExit"       = 1     # Nuclear wipe
-    "PasswordManagerEnabled"        = 0     # No password saving
-    "EdgeShoppingAssistantEnabled"  = 0     # No coupon popups
-    "HubsSidebarEnabled"            = 0     # Kills the sidebar
-    "ShowHubsSidebar"               = 0     # Kills the sidebar button
-    "EdgeCopilotEnabled"            = 0     # NEW: 2026 Copilot policy
-    "VisualSearchEnabled"           = 0     # No AI icons on images
-    "EdgeCollectionsEnabled"        = 0     # Removes "Collections" bloat
+    "InPrivateModeAvailability"     = 2
+    "HideFirstRunExperience"        = 1
+    "RestoreOnStartup"              = 4
+    "StartupBoostEnabled"           = 0
+    "ContinueRunningInBackground"   = 0
+    "ClearBrowsingDataOnExit"       = 1
+    "HubsSidebarEnabled"            = 0
+    "ShowHubsSidebar"               = 0
+    "EdgeAssistantEnabled"          = 0 
+    "EdgeCopilotEnabled"            = 0 # The specific 2026 toggle
+    "ComposeAllowed"                = 0
+    "UserFeedbackAllowed"           = 0 # Stops 'How is Edge?' prompts
 }
 
 $settings.GetEnumerator() | ForEach-Object {
     Set-ItemProperty -Path $regPath -Name $_.Key -Value $_.Value
 }
 
-# 3. Kill the "History Leak" to Windows Search
-# This stops Edge from sharing history with the Windows Start Menu/Search
-$winSearchPath = "HKLM:\SOFTWARE\Policies\Microsoft\Edge"
-Set-ItemProperty -Path $winSearchPath -Name "ShareBrowsingDataWithWindowsSearchAllowed" -Value 0
+# 4. Kill the Bing/Copilot "Discovery" Button Specifically
+$bingPath = "HKLM:\SOFTWARE\Policies\Microsoft\Edge\Recommended"
+if (!(Test-Path $bingPath)) { New-Item -Path $bingPath -Force }
+Set-ItemProperty -Path $bingPath -Name "HubsSidebarEnabled" -Value 0
 
-# 4. Set the Homepage URLs
-$urlPath = "$regPath\RestoreOnStartupURLs"
-if (!(Test-Path $urlPath)) { New-Item -Path $urlPath -Force }
-Set-ItemProperty -Path $urlPath -Name "1" -Value "https://ehraesport.no"
-
-# 5. Rewrite Shortcuts (Desktop & Public Desktop)
-$arguments = "--inprivate --no-first-run --disable-features=msEdgeSidebar,msEdgeCompose,msEdgeWallet https://ehraesport.no"
+# 5. Fix Shortcuts with "Super Arguments"
+$arguments = "--inprivate --no-first-run --no-default-browser-check --disable-features=msEdgeSidebar,msEdgeCompose,msSidebarSearch,msEdgeWallet https://ehraesport.no"
 $WshShell = New-Object -ComObject WScript.Shell
 $shortcuts = Get-ChildItem -Path "$env:PUBLIC\Desktop", "$env:USERPROFILE\Desktop" -Filter "*.lnk"
 
@@ -48,4 +50,4 @@ foreach ($lnk in $shortcuts) {
     }
 }
 
-Write-Host "Edge has been fully silenced for Ehra E-sport."
+Write-Host "Edge has been fully reset and locked for EHRA Esport."
